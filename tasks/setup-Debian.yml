@@ -1,11 +1,10 @@
 ---
 - name: Ensure old versions of Docker are not installed.
   package:
-    name: '{{ item }}'
+    name:
+      - docker
+      - docker-engine
     state: absent
-  with_items:
-    - docker
-    - docker-engine
 
 - name: Ensure dependencies are installed.
   apt:
@@ -27,7 +26,9 @@
   when: add_repository_key is failed
 
 - name: Add Docker apt key (alternative for older systems without SNI).
-  shell: "curl -sSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -"
+  shell: |
+    set -o pipefail
+    curl -sSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
   args:
     warn: false
   when: add_repository_key is failed
